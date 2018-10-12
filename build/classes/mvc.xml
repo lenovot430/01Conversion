@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- 
+		在Resultful风格的URL中不希望出现.do等后缀名，所以在配置DispatcherServlet
+		时会将URLMapping设置为/（根目录）
+		问题:配置后，静态资源不能被处理。会出现404、样式/js代码无效的情况
+		解决:添加default—servlet-handler标签
+		作用:相当于安检。如果是动态资源则交由DispatcherServlet进行处理
+			否则，如果是静态资源则加油DefaultServletHttpRequest进行处理
+	 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 注册转换器 -->
+	<!-- 
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="cn.hl.Converter.UserConverter"></bean>
+			</set>
+		</property>
+	</bean>
+	 -->
+	 <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+	 	<!-- 将自定义的类型转换器注册到converters集合中 -->
+	 	<property name="converters">
+	 		<bean class="cn.hl.Converter.UserConverter"></bean>
+	 	</property>
+	 </bean>
+
+	<!-- 启用注解方式 -->
+	<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+
+	<!-- 配置自动扫描 -->
+	<context:component-scan base-package="cn.hl.controller"></context:component-scan>
+</beans>
